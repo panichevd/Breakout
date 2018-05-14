@@ -25,7 +25,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-    Breakout.cpp
+    Breakout.cpp \
+    Geometry.cpp
 
 HEADERS += \
-    Breakout.h
+    Breakout.h \
+    Geometry.h

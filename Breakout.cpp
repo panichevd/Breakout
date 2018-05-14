@@ -1,6 +1,7 @@
 #include <QPainter>
 
 #include "Breakout.h"
+#include "Geometry.h"
 
 Breakout::Breakout(QWidget *parent) :
     QWidget(parent),
@@ -10,7 +11,8 @@ Breakout::Breakout(QWidget *parent) :
     m_paddle_direction(None),
     m_paddle(250, 370, 100, 20),
     m_ball_x(290),
-    m_ball_y(350)
+    m_ball_y(350),
+    m_ball_radius(20)
 {
     setStyleSheet("background-color:black;");
     resize(WIDTH, HEIGHT);
@@ -44,7 +46,7 @@ void Breakout::game_step()
     painter.fillRect(m_paddle, Qt::darkCyan);
 
     painter.setBrush(Qt::red);
-    painter.drawEllipse(m_ball_x, m_ball_y, 20, 20);
+    painter.drawEllipse(m_ball_x, m_ball_y, m_ball_radius, m_ball_radius);
 
     painter.setBrush(Qt::darkGreen);
     for (const auto & brick : m_bricks) {
@@ -104,7 +106,7 @@ void Breakout::move_paddle()
 void Breakout::switch_direction(const QRect & rect)
 {
     QRect left_third(rect.x(), rect.y(), rect.width()/3, rect.height());
-    if (left_third.contains(m_ball_x, m_ball_y)) {
+    if (rectangle_intersects_circle(left_third, m_ball_x, m_ball_y, m_ball_radius)) {
         if (m_direction == Up || m_direction == UpLeft || m_direction == UpRight) {
             m_direction = DownLeft;
         } else if (m_direction == Down || m_direction == DownLeft || m_direction == DownRight) {
@@ -114,7 +116,7 @@ void Breakout::switch_direction(const QRect & rect)
     }
 
     QRect middle_third(rect.x() + rect.width()/3, rect.y(), rect.width()/3, rect.height());
-    if (middle_third.contains(m_ball_x, m_ball_y)) {
+    if (rectangle_intersects_circle(middle_third, m_ball_x, m_ball_y, m_ball_radius)) {
         if (m_direction == Up || m_direction == UpLeft || m_direction == UpRight) {
             m_direction = Down;
         } else if (m_direction == Down || m_direction == DownLeft || m_direction == DownRight) {
@@ -124,7 +126,7 @@ void Breakout::switch_direction(const QRect & rect)
     }
 
     QRect right_third(rect.x() + (2*rect.width())/3, rect.y(), rect.width()/3, rect.height());
-    if (right_third.contains(m_ball_x, m_ball_y)) {
+    if (rectangle_intersects_circle(right_third, m_ball_x, m_ball_y, m_ball_radius)) {
         if (m_direction == Up || m_direction == UpLeft || m_direction == UpRight) {
             m_direction = DownRight;
         } else if (m_direction == Down || m_direction == DownLeft || m_direction == DownRight) {
@@ -176,7 +178,8 @@ void Breakout::bounce_left()
 void Breakout::check_boundaries()
 {
     for (auto it = m_bricks.begin(); it != m_bricks.end();) {
-        if (it->contains(m_ball_x, m_ball_y)) {
+        if (rectangle_intersects_circle(*it, m_ball_x, m_ball_y, m_ball_radius))
+        {
             switch_direction(*it);
             it = m_bricks.erase(it);
             return;
@@ -185,7 +188,7 @@ void Breakout::check_boundaries()
         }
     }
 
-    if (m_paddle.contains(m_ball_x, m_ball_y)) {
+    if (rectangle_intersects_circle(m_paddle, m_ball_x, m_ball_y, m_ball_radius)) {
         switch_direction(m_paddle);
         return;
     }
@@ -224,7 +227,6 @@ void Breakout::timerEvent(QTimerEvent *e)
 
 void Breakout::keyPressEvent(QKeyEvent *e)
 {
-
     int key = e->key();
 
     if (key == Qt::Key_Left) {

@@ -49,8 +49,8 @@ private:
 private:
     static const int WIDTH = 600;
     static const int HEIGHT = 400;
-    static const int SPEED = 20;
-    static const int DELAY = 140;
+    static const int SPEED = 15;
+    static const int DELAY = 70;
 
 private:
     bool m_in_game;
@@ -62,6 +62,7 @@ private:
     std::vector<QRect> m_bricks;
     int m_ball_x;
     int m_ball_y;
+    int m_ball_radius;
 
     int m_timer_id;
 };

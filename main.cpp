@@ -1,4 +1,5 @@
 #include "Breakout.h"
+#include "Geometry.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
@@ -10,4 +11,6 @@ int main(int argc, char *argv[])
     w.show();
 
     return a.exec();
+
+    return 0;
 }
